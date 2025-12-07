@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2025-12-07T09:42:20.370804Z",
+    "rating": 3,
+    "review_text": "it was worst",
+    "ai_summary": "The customer rated the experience as average with a 3-star rating and mentioned it was the worst.",
+    "ai_actions": [
+      "Investigate the specific issues mentioned by the customer to understand what went wrong.",
+      "Reach out to the customer for more detailed feedback to improve the service."
+    ],
+    "ai_user_response": "We're sorry to hear that your experience was not up to your expectations. We would appreciate it if you could provide more details so we can improve our services. Thank you!"
+  },
+  {
+    "id": 2,
+    "timestamp": "2025-12-07T09:42:45.716397Z",
+    "rating": 5,
+    "review_text": "it was worst",
+    "ai_summary": "The customer gave a 5-star rating but described their experience as the worst, indicating a possible discrepancy between their rating and feedback.",
+    "ai_actions": [
+      "Investigate the reason behind the negative feedback despite the high rating",
+      "Follow up with the customer to understand their experience better"
+    ],
+    "ai_user_response": "Thank you for your feedback. We noticed that you gave us a 5-star rating but mentioned that your experience was the worst. We'd like to understand this better. Could you please provide more details or contact our customer service team?"
+  }
+]
