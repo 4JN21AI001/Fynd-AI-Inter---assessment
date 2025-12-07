@@ -1,95 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - AI Feedback System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 1100px; margin: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
-    th { background: #f9f9f9; }
-    .analytics { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 15px; }
-    button { padding: 8px 12px; cursor: pointer; margin-top: 5px; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #222;
+    }
+    header {
+      background: #2563eb;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header span {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    main {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .metric-box {
+      background: #eff3ff;
+      padding: 12px 14px;
+      border-radius: 10px;
+      min-width: 120px;
+    }
+    .metric-label {
+      font-size: 12px;
+      color: #555;
+    }
+    .metric-value {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .dist {
+      font-size: 13px;
+      margin-top: 6px;
+      color: #444;
+    }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #2563eb;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f9fafb;
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+    }
+    .tag.green { background: #16a34a; }
+    .tag.yellow { background: #eab308; color: #111827; }
+    .tag.red { background: #dc2626; }
+    .small {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    }
+    .login-card {
+      background: white;
+      padding: 24px 22px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16);
+      width: 320px;
+      text-align: center;
+    }
+    .login-card h2 {
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+    .login-card p {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .login-card input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    .login-card input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
+    }
+    .error {
+      font-size: 12px;
+      color: #dc2626;
+      margin-bottom: 8px;
+      min-height: 16px;
+    }
+    .status {
+      font-size: 12px;
+      color: #4b5563;
+    }
+    @media (max-width: 768px) {
+      .metrics {
+        flex-direction: column;
+      }
+      th, td {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Admin Dashboard</h1>
-
-  <div class="analytics">
-    <h3>Analytics</h3>
-    <p>📦 Total Reviews: <strong id="total">0</strong></p>
-    <p>⭐ Average Rating: <strong id="avg">0</strong></p>
-    <p>📊 Rating Distribution: <strong id="distribution"></strong></p>
-    <button id="refresh">🔄 Refresh</button>
+<!-- Login Gate -->
+<div id="login-view" class="login-wrapper">
+  <div class="login-card">
+    <h2>Admin Login</h2>
+    <p>Internal-facing dashboard. Enter the admin password to continue.</p>
+    <input type="password" id="adminPasswordInput" placeholder="Enter admin password" />
+    <div class="error" id="loginError"></div>
+    <button id="loginBtn">Access Dashboard</button>
+    <div class="status small" style="margin-top: 10px;">
+      Hint: This page is not for end-users. Share URL only with reviewers.
+    </div>
   </div>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Timestamp</th>
-        <th>Rating</th>
-        <th>User Review</th>
-        <th>AI Summary</th>
-        <th>Recommended Actions</th>
-      </tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-  </table>
+<!-- Admin Dashboard -->
+<div id="app-view" style="display:none;">
+  <header>
+    <div>
+      <h1>Admin Dashboard – AI Feedback</h1>
+      <span>Internal view of all user reviews, AI summaries & actions</span>
+    </div>
+    <button id="logoutBtn" class="secondary">Logout</button>
+  </header>
+
+  <main>
+    <!-- Analytics Card -->
+    <section class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Analytics Overview</h2>
+        <div>
+          <button id="refreshBtn">🔄 Refresh</button>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-box">
+          <div class="metric-label">Total Reviews</div>
+          <div class="metric-value" id="totalReviews">0</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Average Rating</div>
+          <div class="metric-value" id="averageRating">0.0</div>
+        </div>
+        <div class="metric-box" style="flex:1;">
+          <div class="metric-label">Rating Distribution</div>
+          <div class="dist" id="ratingDistribution">–</div>
+        </div>
+      </div>
+      <div class="small" style="margin-top:8px;">
+        Data is fetched from the same backend used by the public User dashboard.
+      </div>
+    </section>
+
+    <!-- Reviews Table -->
+    <section class="card">
+      <h2>Live Submissions</h2>
+      <div class="small" id="tableStatus">Loading latest reviews...</div>
+      <div style="overflow-x:auto; margin-top:6px;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Timestamp</th>
+              <th>Rating</th>
+              <th>User Review</th>
+              <th>AI Summary</th>
+              <th>AI Recommended Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reviewsTableBody">
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
 
 <script>
-  const API_BASE = "http://localhost:8000"; // Replace after deployment
+  // ==============================
+  // CONFIG
+  // ==============================
+  const API_BASE = "https://fynd-ai-intern-assessment.onrender.com";
+  const ADMIN_PASSWORD = "admin123"; // change if you want
+
+  const loginView = document.getElementById("login-view");
+  const appView = document.getElementById("app-view");
+  const loginInput = document.getElementById("adminPasswordInput");
+  const loginError = document.getElementById("loginError");
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const totalReviewsEl = document.getElementById("totalReviews");
+  const averageRatingEl = document.getElementById("averageRating");
+  const ratingDistributionEl = document.getElementById("ratingDistribution");
+  const tableStatusEl = document.getElementById("tableStatus");
+  const reviewsTableBody = document.getElementById("reviewsTableBody");
+  const refreshBtn = document.getElementById("refreshBtn");
+
+  // ==============================
+  // LOGIN HANDLING
+  // ==============================
+  function showDashboard() {
+    loginView.style.display = "none";
+    appView.style.display = "block";
+    loadAllData();
+  }
+
+  function logout() {
+    appView.style.display = "none";
+    loginView.style.display = "flex";
+    loginInput.value = "";
+    loginError.textContent = "";
+    localStorage.removeItem("admin_authenticated");
+  }
+
+  loginBtn.addEventListener("click", () => {
+    const pwd = loginInput.value.trim();
+    if (!pwd) {
+      loginError.textContent = "Please enter password.";
+      return;
+    }
+    if (pwd === ADMIN_PASSWORD) {
+      localStorage.setItem("admin_authenticated", "true");
+      loginError.textContent = "";
+      showDashboard();
+    } else {
+      loginError.textContent = "Incorrect password.";
+    }
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    logout();
+  });
+
+  // Auto-login if previously authenticated in this browser
+  if (localStorage.getItem("admin_authenticated") === "true") {
+    showDashboard();
+  }
+
+  // ==============================
+  // DATA FETCH HELPERS
+  // ==============================
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error("Request failed: " + res.status);
+    }
+    return res.json();
+  }
 
   async function loadAnalytics() {
-    const res = await fetch(`${API_BASE}/api/analytics`);
-    const data = await res.json();
+    try {
+      const data = await fetchJSON(`${API_BASE}/api/analytics`);
+      totalReviewsEl.textContent = data.total ?? 0;
+      averageRatingEl.textContent = data.average_rating ?? 0;
+      const dist = data.rating_counts || {};
+      const distText = Object.keys(dist)
+        .sort((a, b) => Number(a) - Number(b))
+        .map(k => `${k}⭐: ${dist[k]}`)
+        .join(", ");
+      ratingDistributionEl.textContent = distText || "No data yet";
+    } catch (err) {
+      console.error("Analytics error:", err);
+      ratingDistributionEl.textContent = "Error loading analytics";
+    }
+  }
 
-    document.getElementById("total").innerText = data.total;
-    document.getElementById("avg").innerText = data.average_rating;
-    const d = data.rating_counts;
-    document.getElementById("distribution").innerText = Object.keys(d).map(k => `${k}⭐: ${d[k]}`).join(", ");
+  function ratingTag(rating) {
+    let cls = "green";
+    if (rating <= 2) cls = "red";
+    else if (rating === 3) cls = "yellow";
+    return `<span class="tag ${cls}">${rating} ★</span>`;
   }
 
   async function loadReviews() {
-    const res = await fetch(`${API_BASE}/api/reviews`);
-    const data = await res.json();
+    try {
+      tableStatusEl.textContent = "Loading latest reviews...";
+      const data = await fetchJSON(`${API_BASE}/api/reviews`);
+      reviewsTableBody.innerHTML = "";
 
-    const tbody = document.getElementById("table-body");
-    tbody.innerHTML = "";
+      if (!data || data.length === 0) {
+        tableStatusEl.textContent = "No reviews submitted yet.";
+        return;
+      }
 
-    data.slice().reverse().forEach(r => {
-      const tr = document.createElement("tr");
-      const actions = Array.isArray(r.ai_actions)
-        ? r.ai_actions.map(a => "• " + a).join("<br>")
-        : r.ai_actions;
+      // reverse so latest appears first
+      data.slice().reverse().forEach(r => {
+        const tr = document.createElement("tr");
+        const actions = Array.isArray(r.ai_actions)
+          ? r.ai_actions.map(a => "• " + a).join("<br>")
+          : r.ai_actions;
 
-      tr.innerHTML = `
-        <td>${r.id}</td>
-        <td>${r.timestamp}</td>
-        <td>${r.rating}</td>
-        <td>${r.review_text}</td>
-        <td>${r.ai_summary}</td>
-        <td>${actions}</td>
-      `;
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td><div class="small">${r.timestamp}</div></td>
+          <td>${ratingTag(r.rating)}</td>
+          <td>${r.review_text}</td>
+          <td>${r.ai_summary}</td>
+          <td>${actions}</td>
+        `;
+        reviewsTableBody.appendChild(tr);
+      });
 
-      tbody.appendChild(tr);
-    });
+      tableStatusEl.textContent = `Loaded ${data.length} review(s).`;
+    } catch (err) {
+      console.error("Reviews error:", err);
+      tableStatusEl.textContent = "Error loading reviews.";
+    }
   }
 
-  document.getElementById("refresh").addEventListener("click", () => {
-    loadAnalytics();
-    loadReviews();
+  async function loadAllData() {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Refreshing...";
+    await Promise.all([loadAnalytics(), loadReviews()]);
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "🔄 Refresh";
+  }
+
+  refreshBtn.addEventListener("click", () => {
+    loadAllData();
   });
 
-  // Auto Refresh Every 10 Seconds
+  // Optional: auto-refresh every 15 seconds
   setInterval(() => {
-    loadAnalytics();
-    loadReviews();
-  }, 10000);
-
-  loadAnalytics();
-  loadReviews();
+    if (appView.style.display === "block") {
+      loadAllData();
+    }
+  }, 15000);
 </script>
 
 </body>
